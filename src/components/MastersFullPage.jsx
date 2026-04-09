@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { formatScore } from '../utils/scoreUtils.js'
-import { processCompetitor, sortCompetitors } from './MastersLeaderboard.jsx'
+import { processCompetitor, sortCompetitors, CUT_PROJECTIONS, PROJECTED_CUT } from './MastersLeaderboard.jsx'
 
 /**
  * Full-screen Masters tournament leaderboard.
@@ -25,9 +25,19 @@ export default function MastersFullPage({ competitors, onBack }) {
     }
   }
 
-  // Separate made cut from missed cut
   const made = ranked.filter((g) => !g.isMC)
   const mc   = ranked.filter((g) => g.isMC)
+
+  // Index after which to insert the cut line divider
+  const cutInsertAfter = (() => {
+    let last = -1
+    for (let i = 0; i < made.length; i++) {
+      if (made[i].score !== null && made[i].score <= PROJECTED_CUT) last = i
+    }
+    return last
+  })()
+
+  const projStr = CUT_PROJECTIONS.map((p) => `+${p.score}: ${p.pct}%`).join(' · ')
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -59,30 +69,42 @@ export default function MastersFullPage({ competitors, onBack }) {
           </div>
 
           <div className="overflow-y-auto">
-            {made.map((g) => (
-              <div
-                key={g.name}
-                className="flex items-center gap-3 px-4 py-2 border-b border-masters-green/20 hover:bg-masters-green/20 transition-colors"
-              >
-                <span className="w-10 text-right text-masters-gold/70 text-sm font-medium shrink-0 tabular-nums">
-                  {g.rankStr}
-                </span>
-                <span className="flex-1 text-masters-cream text-sm">{g.name}</span>
-                <span
-                  className={clsx(
-                    'w-14 text-right font-bold tabular-nums text-sm shrink-0',
-                    g.score < 0
-                      ? 'text-green-400'
-                      : g.score > 0
-                      ? 'text-red-400'
-                      : 'text-masters-cream'
-                  )}
-                >
-                  {formatScore(g.score)}
-                </span>
-                <span className="w-10 text-right text-masters-cream/50 text-xs tabular-nums shrink-0">
-                  {g.thru}
-                </span>
+            {made.map((g, i) => (
+              <div key={g.name}>
+                <div className="flex items-center gap-3 px-4 py-2 border-b border-masters-green/20 hover:bg-masters-green/20 transition-colors">
+                  <span className="w-10 text-right text-masters-gold/70 text-sm font-medium shrink-0 tabular-nums">
+                    {g.rankStr}
+                  </span>
+                  <span className="flex-1 text-masters-cream text-sm">{g.name}</span>
+                  <span
+                    className={clsx(
+                      'w-14 text-right font-bold tabular-nums text-sm shrink-0',
+                      g.score < 0
+                        ? 'text-green-400'
+                        : g.score > 0
+                        ? 'text-red-400'
+                        : 'text-masters-cream'
+                    )}
+                  >
+                    {formatScore(g.score)}
+                  </span>
+                  <span className="w-10 text-right text-masters-cream/50 text-xs tabular-nums shrink-0">
+                    {g.thru}
+                  </span>
+                </div>
+
+                {/* Cut line divider */}
+                {i === cutInsertAfter && (
+                  <div className="flex items-center gap-3 px-4 py-2 bg-red-900/20 border-y border-red-700/40">
+                    <span className="text-red-400 font-bold text-xs uppercase tracking-widest shrink-0">
+                      ✂ Projected Cut
+                    </span>
+                    <span className="flex-1 text-red-300/60 text-xs">{projStr}</span>
+                    <span className="text-red-400 font-bold text-sm tabular-nums shrink-0">
+                      +{PROJECTED_CUT}
+                    </span>
+                  </div>
+                )}
               </div>
             ))}
 
