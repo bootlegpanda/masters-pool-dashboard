@@ -1,4 +1,4 @@
-// 16 entries for the Masters Pool dashboard.
+// 16 entries for the Masters Pool (second dashboard).
 // golfers[0]=G1, golfers[1]=G2, golfers[2]=G3, golfers[3]=G4
 // tb = tiebreaker: predicted winning score (integer)
 export const POOL_ENTRIES_2 = [
