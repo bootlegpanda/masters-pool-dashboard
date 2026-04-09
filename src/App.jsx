@@ -7,7 +7,6 @@ import {
   rankEntries,
   getLeaderScore,
 } from './utils/scoreUtils.js'
-import { POOL_ENTRIES } from './data/poolEntries.js'
 
 import Header             from './components/Header.jsx'
 import LiveStreamBanner   from './components/LiveStreamBanner.jsx'
@@ -18,11 +17,16 @@ import MastersLeaderboard from './components/MastersLeaderboard.jsx'
 import MastersFullPage    from './components/MastersFullPage.jsx'
 import LoadingSpinner     from './components/LoadingSpinner.jsx'
 
-const DEFAULT_ENTRY = 'B Flaherty'
-
-export default function App() {
+/**
+ * Props:
+ *  poolEntries  – array of { name, golfers, tb } objects for this pool
+ *  poolTitle    – string shown in the header (e.g. "MASTERS POOL")
+ *  defaultEntry – entry name to pre-select on first visit
+ *  storageKey   – localStorage key for persisting the selection (unique per pool)
+ */
+export default function App({ poolEntries, poolTitle, defaultEntry, storageKey }) {
   const { competitors, lastUpdated, loading, error, countdown, refresh } = useEspnData()
-  const [selectedName, setSelectedName] = useLocalStorage('masters-pool-entry', DEFAULT_ENTRY)
+  const [selectedName, setSelectedName] = useLocalStorage(storageKey, defaultEntry)
   const [view, setView] = useState('dashboard') // 'dashboard' | 'masters'
 
   // ── Derived data (memoised for perf) ──────────────────────────────────────
@@ -38,8 +42,8 @@ export default function App() {
   )
 
   const allResults = useMemo(
-    () => POOL_ENTRIES.map((e) => computeEntryResult(e, espnLookup)),
-    [espnLookup]
+    () => poolEntries.map((e) => computeEntryResult(e, espnLookup)),
+    [poolEntries, espnLookup]
   )
 
   const rankedEntries = useMemo(
@@ -72,6 +76,8 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header
+        poolEntries={poolEntries}
+        poolTitle={poolTitle}
         selectedName={selectedName}
         onSelectEntry={setSelectedName}
         countdown={countdown}
@@ -95,7 +101,7 @@ export default function App() {
           <StandingCard
             result={selectedResult}
             leaderScore={leaderScore}
-            totalEntries={POOL_ENTRIES.length}
+            totalEntries={poolEntries.length}
           />
         </aside>
 

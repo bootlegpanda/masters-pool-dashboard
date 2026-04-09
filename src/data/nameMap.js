@@ -55,4 +55,7 @@ export const NAME_MAP = {
   'Valimaki':    'Sami V\u00e4lim\u00e4ki', // ä
   'Berger':      'Daniel Berger',
   'McNealy':     'Maverick McNealy',
+  'Bradley':     'Keegan Bradley',
+  'Z Johnson':   'Zach Johnson',
+  'Couples':     'Fred Couples',
 }

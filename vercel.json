@@ -3,6 +3,14 @@
     {
       "source": "/api/espn/:path*",
       "destination": "https://site.api.espn.com/:path*"
+    },
+    {
+      "source": "/second",
+      "destination": "/second.html"
+    },
+    {
+      "source": "/second/",
+      "destination": "/second.html"
     }
   ]
 }

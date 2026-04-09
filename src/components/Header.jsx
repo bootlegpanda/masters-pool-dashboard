@@ -1,10 +1,11 @@
-import { POOL_ENTRIES } from '../data/poolEntries.js'
 import RefreshTimer from './RefreshTimer.jsx'
 
 /**
  * Top header bar.
  *
  * Props:
+ *  poolEntries   – array of entry objects (populates the selector dropdown)
+ *  poolTitle     – string displayed as the dashboard title
  *  selectedName  – currently selected entry name
  *  onSelectEntry – callback(name)
  *  countdown     – seconds until next refresh
@@ -13,6 +14,8 @@ import RefreshTimer from './RefreshTimer.jsx'
  *  error         – string | null
  */
 export default function Header({
+  poolEntries,
+  poolTitle,
   selectedName,
   onSelectEntry,
   countdown,
@@ -28,10 +31,10 @@ export default function Header({
           <span className="text-2xl">⛳</span>
           <div>
             <h1 className="text-masters-gold font-extrabold text-base leading-tight tracking-wide">
-              MASTERS POOL
+              {poolTitle}
             </h1>
             <p className="text-masters-cream/50 text-[10px] uppercase tracking-widest leading-tight">
-              2025 · Live Dashboard
+              2026 · Live Dashboard
             </p>
           </div>
         </div>
@@ -49,7 +52,7 @@ export default function Header({
                        focus:outline-none focus:border-masters-gold/60
                        appearance-none cursor-pointer"
           >
-            {POOL_ENTRIES.map((e) => (
+            {poolEntries.map((e) => (
               <option key={e.name} value={e.name}>
                 {e.name}
               </option>

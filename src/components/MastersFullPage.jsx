@@ -41,7 +41,7 @@ export default function MastersFullPage({ competitors, onBack }) {
         </button>
         <div className="flex-1 text-center">
           <h1 className="text-masters-gold font-extrabold tracking-wide">
-            THE MASTERS 2025 — FULL LEADERBOARD
+            THE MASTERS 2026 — FULL LEADERBOARD
           </h1>
         </div>
         <span className="text-masters-cream/40 text-xs">{competitors.length} players</span>
