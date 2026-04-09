@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import { useEspnData }    from './hooks/useEspnData.js'
 import { useLocalStorage } from './hooks/useLocalStorage.js'
 import { buildEspnLookup } from './utils/nameUtils.js'
@@ -131,5 +132,6 @@ export default function App({ poolEntries, poolTitle, defaultEntry, storageKey }
         </div>
       </main>
     </div>
+    <Analytics />
   )
 }
