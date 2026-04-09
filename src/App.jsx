@@ -131,7 +131,7 @@ export default function App({ poolEntries, poolTitle, defaultEntry, storageKey }
           />
         </div>
       </main>
+      <Analytics />
     </div>
-    <Analytics />
   )
 }
