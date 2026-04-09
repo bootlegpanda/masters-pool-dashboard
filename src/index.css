@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-masters-green: #1a472a;
+  --color-masters-green-mid: #2d6a4f;
+  --color-masters-green-lt: #40916c;
+  --color-masters-gold: #c9a84c;
+  --color-masters-gold-lt: #e8c96a;
+  --color-masters-cream: #f5f0e8;
+  --color-masters-elim: #6b7280;
+  --color-masters-red: #dc2626;
+  --color-masters-badge: #0f3320;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #1a472a;
+  color: #f5f0e8;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Custom scrollbar for leaderboard panels */
+.leaderboard-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.leaderboard-scroll::-webkit-scrollbar-track {
+  background: #0f3320;
+}
+.leaderboard-scroll::-webkit-scrollbar-thumb {
+  background: #c9a84c;
+  border-radius: 3px;
+}
+.leaderboard-scroll::-webkit-scrollbar-thumb:hover {
+  background: #e8c96a;
+}
+
+/* Score color helpers */
+.score-under { color: #4ade80; }
+.score-over  { color: #f87171; }
+.score-even  { color: #f5f0e8; }
+.score-mc    { color: #f87171; font-weight: 600; }
