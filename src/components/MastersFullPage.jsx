@@ -28,16 +28,14 @@ export default function MastersFullPage({ competitors, onBack }) {
   const made = ranked.filter((g) => !g.isMC)
   const mc   = ranked.filter((g) => g.isMC)
 
-  // Map of index → cut projection to insert BEFORE that player
-  const cutBeforeIndex = new Map()
-  const cutScores = new Set(CUT_PROJECTIONS.map((p) => p.score))
-  const seen = new Set()
-  for (let i = 0; i < made.length; i++) {
-    const s = made[i].score
-    if (s !== null && cutScores.has(s) && !seen.has(s)) {
-      seen.add(s)
-      cutBeforeIndex.set(i, CUT_PROJECTIONS.find((p) => p.score === s))
+  // Map of index → cut projection to insert AFTER that player (after last player at each cut score)
+  const cutAfterIndex = new Map()
+  for (const proj of CUT_PROJECTIONS) {
+    let last = -1
+    for (let i = 0; i < made.length; i++) {
+      if (made[i].score === proj.score) last = i
     }
+    if (last >= 0) cutAfterIndex.set(last, proj)
   }
 
   return (
@@ -72,20 +70,6 @@ export default function MastersFullPage({ competitors, onBack }) {
           <div className="overflow-y-auto">
             {made.map((g, i) => (
               <div key={g.name}>
-                {cutBeforeIndex.has(i) && (() => {
-                  const proj = cutBeforeIndex.get(i)
-                  return (
-                    <div className="flex items-center gap-3 px-4 py-2 bg-red-900/20 border-y border-red-700/30">
-                      <span className="text-red-400 font-bold text-xs uppercase tracking-widest shrink-0">
-                        ✂ Cut if +{proj.score}
-                      </span>
-                      <span className="flex-1" />
-                      <span className="text-red-300/60 text-xs tabular-nums shrink-0">
-                        {proj.pct}%
-                      </span>
-                    </div>
-                  )
-                })()}
                 <div className="flex items-center gap-3 px-4 py-2 border-b border-masters-green/20 hover:bg-masters-green/20 transition-colors">
                   <span className="w-10 text-right text-masters-gold/70 text-sm font-medium shrink-0 tabular-nums">
                     {g.rankStr}
@@ -107,7 +91,20 @@ export default function MastersFullPage({ competitors, onBack }) {
                     {g.thru}
                   </span>
                 </div>
-
+                {cutAfterIndex.has(i) && (() => {
+                  const proj = cutAfterIndex.get(i)
+                  return (
+                    <div className="flex items-center gap-3 px-4 py-2 bg-red-900/20 border-y border-red-700/30">
+                      <span className="text-red-400 font-bold text-xs uppercase tracking-widest shrink-0">
+                        ✂ Cut if +{proj.score}
+                      </span>
+                      <span className="flex-1" />
+                      <span className="text-red-300/60 text-xs tabular-nums shrink-0">
+                        {proj.pct}%
+                      </span>
+                    </div>
+                  )
+                })()}
               </div>
             ))}
 

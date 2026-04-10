@@ -18,8 +18,9 @@ export function buildEspnLookup(competitors) {
 
     const score = parseScore(comp.score ?? 'E')
 
-    // Thru: count nested hole linescores in the current round
-    const roundLinescores = comp.linescores?.[0]?.linescores ?? []
+    // Thru: use the last round in the array (current round, not always round 1)
+    const rounds = comp.linescores ?? []
+    const roundLinescores = (rounds[rounds.length - 1]?.linescores) ?? []
     const holesPlayed = roundLinescores.length
     const isFinished =
       comp.status?.type?.shortDetail === 'F' ||

@@ -3,9 +3,9 @@ import { formatScore, parseScore } from '../utils/scoreUtils.js'
 
 // Projected cut line probabilities (hardcoded, update as needed)
 export const CUT_PROJECTIONS = [
-  { score: 3, pct: 28.8 },
-  { score: 4, pct: 38.4 },
-  { score: 5, pct: 19.4 },
+  { score: 3, pct: 28.0 },
+  { score: 4, pct: 55.8 },
+  { score: 5, pct: 14.4 },
 ]
 // The most likely cut score
 export const PROJECTED_CUT = CUT_PROJECTIONS.reduce((a, b) => a.pct > b.pct ? a : b).score
@@ -15,7 +15,8 @@ export function processCompetitor(c) {
   const score = parseScore(c.score ?? 'E')
   const name  = c.athlete?.displayName ?? 'Unknown'
 
-  const roundLinescores = c.linescores?.[0]?.linescores ?? []
+  const rounds = c.linescores ?? []
+  const roundLinescores = (rounds[rounds.length - 1]?.linescores) ?? []
   const holesPlayed = roundLinescores.length
   const isFinished  =
     c.status?.type?.shortDetail === 'F' ||
@@ -69,17 +70,14 @@ function CutlineDivider({ proj, compact = false }) {
 export default function MastersLeaderboard({ competitors, limit = 20, onViewFull }) {
   const sorted = sortCompetitors(competitors.map(processCompetitor)).slice(0, limit)
 
-  // Map of index → cut projection to insert BEFORE that player
-  const cutBeforeIndex = new Map()
-  const cutScores = new Set(CUT_PROJECTIONS.map((p) => p.score))
-  const seen = new Set()
-  for (let i = 0; i < sorted.length; i++) {
-    const s = sorted[i].score
-    if (s !== null && cutScores.has(s) && !seen.has(s)) {
-      seen.add(s)
-      const proj = CUT_PROJECTIONS.find((p) => p.score === s)
-      cutBeforeIndex.set(i, proj)
+  // Map of index → cut projection to insert AFTER that player (after last player at each cut score)
+  const cutAfterIndex = new Map()
+  for (const proj of CUT_PROJECTIONS) {
+    let last = -1
+    for (let i = 0; i < sorted.length; i++) {
+      if (sorted[i].score === proj.score) last = i
     }
+    if (last >= 0) cutAfterIndex.set(last, proj)
   }
 
   return (
@@ -115,9 +113,6 @@ export default function MastersLeaderboard({ competitors, limit = 20, onViewFull
         ) : (
           sorted.map((g, i) => (
             <div key={g.name}>
-              {cutBeforeIndex.has(i) && (
-                <CutlineDivider proj={cutBeforeIndex.get(i)} compact />
-              )}
               <div className="flex items-center gap-2 px-3 py-1.5 border-b border-masters-green/20 text-sm hover:bg-masters-green/20 transition-colors">
                 <span className="w-6 text-right text-masters-gold/60 text-xs shrink-0">
                   {i + 1}
@@ -141,6 +136,9 @@ export default function MastersLeaderboard({ competitors, limit = 20, onViewFull
                   {g.thru}
                 </span>
               </div>
+              {cutAfterIndex.has(i) && (
+                <CutlineDivider proj={cutAfterIndex.get(i)} compact />
+              )}
             </div>
           ))
         )}
